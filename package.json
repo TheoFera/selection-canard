@@ -1,0 +1,11 @@
+{
+  "name": "site-canard-protege",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node encrypt.mjs canard",
+    "build:pw": "node encrypt.mjs",
+    "start": "python3 -m http.server -d docs 5173"
+  }
+}

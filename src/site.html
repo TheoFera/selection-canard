@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Produits de fin d'année</title>
+  <style>
+    :root{
+      --bg:#faf7f2;
+      --ink:#2b2b2b;
+      --muted:#666;
+      --accent:#9c6b3d; /* ton doré/brun canard */
+      --card:#ffffff;
+      --shadow:0 8px 24px rgba(0,0,0,.08);
+      --radius:18px;
+    }
+    html,body{margin:0;background:var(--bg);color:var(--ink);font-family: ui-serif, Georgia, 'Times New Roman', Times, serif;line-height:1.5}
+    .wrap{max-width:1000px;margin:0 auto;padding:24px}
+    header.hero{
+      position:relative;
+      border-radius:var(--radius);
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      background: #d7c6a5;
+      min-height: 260px;
+      display:grid;
+      grid-template-columns:1fr;
+      align-items:end;
+      padding: 0;
+    }
+    .hero img{
+      position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:contrast(0.9) saturate(0.9) brightness(0.9);
+    }
+    .veil{position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.55));}
+    .hero .content{
+      position:relative; z-index:2; color:#fff; padding:28px;
+    }
+    h1{font-size:clamp(28px, 4vw, 44px); margin:0 0 8px 0; font-weight:700; letter-spacing:.5px}
+    .subtitle{font-size:clamp(16px, 2.2vw, 18px); color:#f2e9de}
+    .notice{
+      margin:22px 0 0 0; display:flex; flex-wrap:wrap; gap:12px;
+    }
+    .badge{
+      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.35); padding:10px 14px; border-radius:999px; font-size:15px
+    }
+    .producer{
+      background:var(--card); border-radius:var(--radius); padding:18px 20px; box-shadow:var(--shadow);
+      margin:24px 0 10px 0; font-size:16px
+    }
+    .producer strong{color:var(--accent)}
+    .grid{
+      display:grid; gap:18px; grid-template-columns:repeat(2, minmax(0, 1fr));
+    }
+    @media (max-width:760px){ .grid{grid-template-columns:1fr;} }
+    .card{
+      background:var(--card); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column
+    }
+    .card .photo{aspect-ratio: 4/3; background:#eee}
+    .card img{width:100%; height:100%; object-fit:cover; display:block}
+    .card .body{padding:16px 16px 18px 16px}
+    .card h3{margin:0 0 6px 0; font-size:20px}
+    .card p{margin:0 0 12px 0; color:var(--muted)}
+    .prices{display:flex; flex-wrap:wrap; gap:10px}
+    .pill{border:1px solid #ddd; padding:8px 10px; border-radius:999px; background:#fff; font-size:14px}
+    footer{margin:40px 0 10px; color:var(--muted); text-align:center; font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <img src="images/Canard.jpg" alt="Canards à la ferme">
+      <div class="veil"></div>
+      <div class="content">
+        <h1>Sélection de fin d'année</h1>
+        <div class="subtitle">Commandes jusqu'au <strong>12 octobre 2025</strong></div>
+        <div class="notice">
+          <div class="badge">Réglements et commandes auprès d'un référent local</div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div id="catalog" class="grid"></div>
+    </main>
+
+    
+    <section class="producer">
+      <p>La ferme qui nous fournit les produits est située au cœur des Landes, ils sont éleveurs de canards depuis 4 générations.</p>
+    </section>
+
+    <footer>Ne pas partager le site s'il vous plaît</footer>
+  </div>
+
+  <script>
+  // === Données produits (modifiable facilement) ===
+  const PRODUCTS = [
+    {
+      id: "foie-entier",
+      name: "Foie gras de canard entier",
+      image: "images/Foie_gras_entier.jpg",
+      description: "Foie gras entier cuit et stérilisé en bocal : texture ferme, arômes développés, longue conservation à température ambiante.",
+      options: [
+        { weight: "120 g", price: "12,50 €" },
+        { weight: "200 g", price: "18,80 €" }
+      ]
+    },
+    {
+      id: "foie-micuit",
+      name: "Foie gras mi-cuit",
+      image: "images/Foie_gras_mi-cuit.jpg",
+      description: "Foie gras pasteurisé à basse température : texture fondante et goût délicat ; à conserver au frais.",
+      options: [
+        { weight: "120 g", price: "12,50 €" },
+        { weight: "200 g", price: "18,80 €" }
+      ]
+    },
+    {
+      id: "pate-paysan",
+      name: "Pâté paysan au foie gras de canard",
+      image: "images/Pate_paysan.jpg",
+      description: "Pâté traditionnel mariant chair de canard et éclats de foie gras ; assaisonnement simple qui met la matière en avant.",
+      options: [
+        { weight: "180 g", price: "4,80 €" }
+      ]
+    },
+    {
+      id: "rillettes",
+      name: "Rillettes pur canard",
+      image: "images/Rillettes_pur_canard.jpg",
+      description: "Viande de canard lentement confite puis effilochée : texture filante, goût franc et généreux.",
+      options: [
+        { weight: "250 g", price: "3,60 €" }
+      ]
+    }
+  ];
+
+  // === Rendu sans backticks ===
+  const el = document.getElementById('catalog');
+  let html = '';
+  for (const p of PRODUCTS) {
+    html += '<article class="card" id="'+p.id+'">';
+    html +=   '<div class="photo"><img alt="'+p.name+'" src="'+p.image+'"></div>';
+    html +=   '<div class="body">';
+    html +=     '<h3>'+p.name+'</h3>';
+    html +=     '<p>'+p.description+'</p>';
+    html +=     '<div class="prices">';
+    for (const o of p.options) {
+      html += '<span class="pill">'+o.weight+' — '+o.price+'</span>';
+    }
+    html +=     '</div>';
+    html +=   '</div>';
+    html += '</article>';
+  }
+  el.innerHTML = html;
+</script>
+
+</body>
+</html>
