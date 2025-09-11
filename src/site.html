@@ -93,7 +93,7 @@
 
   <script>
   // === Données produits (modifiable facilement) ===
-  const PRODUCTS = [
+  var PRODUCTS = [
     {
       id: "foie-micuit",
       name: "Foie gras de canard entier mi-cuit médaille d'or Paris 2024",
@@ -135,16 +135,18 @@
   ];
 
   // === Rendu sans backticks ===
-  const el = document.getElementById('catalog');
-  let html = '';
-  for (const p of PRODUCTS) {
+  var el = document.getElementById('catalog');
+  var html = '';
+  for (var i = 0; i < PRODUCTS.length; i++) {
+    var p = PRODUCTS[i];
     html += '<article class="card" id="'+p.id+'">';
     html +=   '<div class="photo"><img alt="'+p.name+'" src="'+p.image+'"></div>';
     html +=   '<div class="body">';
     html +=     '<h3>'+p.name+'</h3>';
     html +=     '<p>'+p.description+'</p>';
     html +=     '<div class="prices">';
-    for (const o of p.options) {
+    for (var j = 0; j < p.options.length; j++) {
+      var o = p.options[j];
       html += '<span class="pill">';
       html +=   '<span>'+o.weight+' — '+o.price+'</span>';
       if (o.marketPrice) {
