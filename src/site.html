@@ -61,7 +61,8 @@
     .card h3{margin:0 0 6px 0; font-size:20px}
     .card p{margin:0 0 12px 0; color:var(--muted)}
     .prices{display:flex; flex-wrap:wrap; gap:10px}
-    .pill{border:1px solid #ddd; padding:8px 10px; border-radius:999px; background:#fff; font-size:14px}
+    .pill{border:1px solid #ddd; padding:8px 10px; border-radius:12px; background:#fff; font-size:14px; display:flex; flex-direction:column; align-items:flex-start}
+    .pill .market{font-size:12px; color:var(--muted)}
     footer{margin:40px 0 10px; color:var(--muted); text-align:center; font-size:14px}
   </style>
 </head>
@@ -99,18 +100,18 @@
       image: "images/Foie_gras_mi-cuit.jpg",
       description: "Foie gras pasteurisé à basse température : à conserver au frais.",
       options: [
-        { weight: "120 g", price: "18,00 €" },
-        { weight: "200 g", price: "25,00 €" }
+        { weight: "120 g", price: "18,00 €", marketPrice: "20,00 €" },
+        { weight: "200 g", price: "25,00 €", marketPrice: "27,00 €" }
       ]
-    }, 
+    },
     {
       id: "foie-entier",
       name: "Foie gras de canard entier",
       image: "images/Foie_gras_entier.jpg",
       description: "Foie gras entier cuit et stérilisé en bocal : longue conservation à température ambiante.",
       options: [
-        { weight: "120 g", price: "17,00 €" },
-        { weight: "200 g", price: "24,00 €" }
+        { weight: "120 g", price: "17,00 €", marketPrice: "19,00 €" },
+        { weight: "200 g", price: "24,00 €", marketPrice: "26,00 €" }
       ]
     },
     {
@@ -119,7 +120,7 @@
       image: "images/Pate_paysan.jpg",
       description: "Pâté traditionnel mariant chair de canard et éclats de foie gras.",
       options: [
-        { weight: "180 g", price: "8,00 €" }
+        { weight: "180 g", price: "8,00 €", marketPrice: "10,00 €" }
       ]
     },
     {
@@ -128,7 +129,7 @@
       image: "images/Rillettes_pur_canard.jpg",
       description: "Viande de canard lentement confite puis effilochée.",
       options: [
-        { weight: "250 g", price: "6,00 €" }
+        { weight: "250 g", price: "6,00 €", marketPrice: "7,00 €" }
       ]
     }
   ];
@@ -144,7 +145,12 @@
     html +=     '<p>'+p.description+'</p>';
     html +=     '<div class="prices">';
     for (const o of p.options) {
-      html += '<span class="pill">'+o.weight+' — '+o.price+'</span>';
+      html += '<span class="pill">';
+      html +=   '<span>'+o.weight+' — '+o.price+'</span>';
+      if (o.marketPrice) {
+        html +=   '<span class="market">Prix du marché : '+o.marketPrice+'</span>';
+      }
+      html += '</span>';
     }
     html +=     '</div>';
     html +=   '</div>';
