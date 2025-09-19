@@ -40,7 +40,7 @@
   async function deriveKey(password, salt, iterations){
     const enc = new TextEncoder();
     const keyMaterial = await crypto.subtle.importKey(
-      "raw", enc.encode(password.toLowerCase().trim()), // normalisation pour accepter "Canard" et "canard"
+      "raw", enc.encode(password.toLowerCase().trim()),
       {name:"PBKDF2"}, false, ["deriveKey"]
     );
     return crypto.subtle.deriveKey(
