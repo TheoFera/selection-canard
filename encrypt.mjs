@@ -46,7 +46,7 @@ function inlineImages(html){
 }
 
 async function deriveKey(password, salt){
-  const norm = password.toLowerCase().trim(); // canard/Canard identiques
+  const norm = password.toLowerCase().trim(); 
   const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(norm), 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey(
     {name:'PBKDF2', salt, iterations, hash:'SHA-256'},
