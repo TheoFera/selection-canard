@@ -13,6 +13,8 @@
       --card:#ffffff;
       --shadow:0 8px 24px rgba(0,0,0,.08);
       --radius:18px;
+      --space: 20px;
+      --space-sm: 16px;
     }
     html,body{margin:0;background:var(--bg);color:var(--ink);font-family: ui-serif, Georgia, 'Times New Roman', Times, serif;line-height:1.5}
     .wrap{max-width:1000px;margin:0 auto;padding:24px}
@@ -27,6 +29,7 @@
       grid-template-columns:1fr;
       align-items:end;
       padding: 0;
+      margin: 0 0 var(--space) 0;
     }
     .hero img{
       position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:contrast(0.9) saturate(0.9) brightness(0.9);
@@ -44,12 +47,55 @@
       background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.35); padding:10px 14px; border-radius:999px; font-size:15px
     }
     .producer{
-      background:var(--card); border-radius:var(--radius); padding:18px 20px; box-shadow:var(--shadow);
-      margin:24px 0 10px 0; font-size:16px
+      background:var(--card); border-radius:var(--radius); padding:20px 22px; box-shadow:var(--shadow);
+      margin: 0 0 var(--space) 0;
+      font-size:16px;
+      display:grid;
+      grid-template-columns: min(320px, 35vw) 1fr; /* au lieu de 220px fixe */
+      gap:20px;
+      align-items:start; /* évite l'étirement vertical de l'image */
     }
     .producer strong{color:var(--accent)}
+    .producer-photo{
+      margin:0; border-radius:var(--radius); overflow:hidden;
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);
+      width:100%;
+      aspect-ratio: 4 / 3;
+    }
+    .producer-photo img{display:block; width:100%; height:100%; object-fit:cover}
+    /* Desktop : on limite la hauteur de l’image et on centre le texte */
+    @media (min-width:620px){
+      .producer{
+        grid-template-columns: 240px 1fr; /* ajuste 380–500px selon ton goût */
+        align-items: center;              /* centre verticalement la colonne texte */
+      }
+      .producer-photo{
+        aspect-ratio: auto;   /* on enlève le ratio fixe */
+        height: auto;
+        max-height: 320px;    /* ↓ joue entre 280 et 360 pour avoir pile ce que tu veux */
+      }
+      .producer-photo img{
+        height:100%;
+        object-fit:cover;
+      }
+    }
+    .producer-body p{margin:0 0 12px 0}
+    .producer-body p:last-child{margin-bottom:0}
+    @media (max-width:620px){
+      .producer{
+        grid-template-columns: 1fr;             /* ← redevient 1 colonne (image au-dessus) */
+        margin: 0 0 var(--space-sm) 0;
+      }
+      .producer-photo{
+        max-width:100%;
+        justify-self: stretch;                   /* ← prend toute la largeur, pas juste centrée */
+        aspect-ratio: 4/3;                       /* ← ratio propre en mobile */
+        height: auto;                            /* ← au cas où */
+      }
+      .grid{ gap:14px; }
+    }
     .grid{
-      display:grid; gap:18px; grid-template-columns:repeat(2, minmax(0, 1fr));
+      display:grid; gap:20px; grid-template-columns:repeat(2, minmax(0, 1fr));
     }
     @media (max-width:760px){ .grid{grid-template-columns:1fr;} }
     .card{
@@ -81,7 +127,14 @@
     </header>
 
     <section class="producer">
-      <p>Notre producteur-fournisseur est situé au cœur des Landes. Sa famille est éleveuse de canards depuis 4 générations.</p>
+      <figure class="producer-photo">
+              <img src="images/producteur-famille.jpg" alt="Producteur et famille devant l'entrée de la ferme">
+      </figure>
+      <div class="producer-body">
+        <p>Notre producteur-fournisseur est situé au cœur des Landes, au coeur de la Chalosse, à 20 kms de Dax.</p>
+        <p>Sa famille éleve, gave et conserve sur place dans le respect des savoirs-faire traditionnels transmis depuis 4 générations.</p>
+        <p>Sa ferme possède 5 hectares de parcours arborés pour élèver ses canards et cultive, pour les nourrir, 60 hectares de maïs, tournesol, colza et blé.</p>
+      </div> 
     </section>
 
     <main>
@@ -98,7 +151,7 @@
       id: "foie-micuit",
       name: "Foie gras de canard entier mi-cuit médaille d'or Paris 2024",
       image: "images/Foie_gras_mi-cuit.jpg",
-      description: "Foie gras pasteurisé à basse température : à conserver au frais.",
+      description: "Le produit phare de notre producteur que nous recommandons. Foie gras pasteurisé à basse température : conservation au frais 2 à 3 mois.",
       options: [
         { weight: "120 g", price: "18,00 €", marketPrice: "20 € à 25 €" },
         { weight: "180 g", price: "25,00 €", marketPrice: "33 € à 40 €" }
@@ -108,7 +161,7 @@
       id: "foie-entier",
       name: "Foie gras de canard entier",
       image: "images/Foie_gras_entier.jpg",
-      description: "Foie gras entier cuit et stérilisé en bocal : longue conservation à température ambiante.",
+      description: "Foie gras entier cuit et stérilisé en bocal : conservation 2 à 3 ans à température ambiante.",
       options: [
         { weight: "120 g", price: "17,00 €", marketPrice: "18 € à 23 €" },
         { weight: "180 g", price: "24,00 €", marketPrice: "30 € à 37 €" }
@@ -118,7 +171,7 @@
       id: "pate-paysan",
       name: "Pâté paysan au foie gras de canard",
       image: "images/Pate_paysan.jpg",
-      description: "Pâté traditionnel mariant chair de canard et éclats de foie gras.",
+      description: "Pâté traditionnel mariant chair de canard et éclats de foie gras : conservation 2 à 3 ans à température ambiante.",
       options: [
         { weight: "180 g", price: "8,00 €", marketPrice: "8,50 € à 11,50 €" }
       ]
@@ -127,7 +180,7 @@
       id: "rillettes",
       name: "Rillettes pur canard",
       image: "images/Rillettes_pur_canard.jpg",
-      description: "Viande de canard lentement confite puis effilochée.",
+      description: "Viande de canard lentement confite puis effilochée : conservation 2 à 3 ans à température ambiante.",
       options: [
         { weight: "250 g", price: "6,00 €", marketPrice: "7 € à 8,50 €" }
       ]

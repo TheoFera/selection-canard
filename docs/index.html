@@ -13,8 +13,15 @@
     .panel{ width:min(520px, 92vw); background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:28px }
     h1{ margin:0 0 6px 0; font-size:clamp(22px, 4vw, 28px) }
     p{ margin:0 0 16px 0; color:var(--muted) }
-    input[type=password]{ width:100%; padding:14px 16px; border:1px solid #ddd; border-radius:12px; font-size:16px; outline:none }
-    button{ width:100%; margin-top:12px; padding:12px 16px; border:0; background:var(--accent); color:#fff; border-radius:12px; font-size:16px; cursor:pointer }
+        .input-wrap{ position:relative }
+    .pw-field{ width:100%; padding:14px 48px 14px 16px; border:1px solid #ddd; border-radius:12px; font-size:16px; outline:none }
+    .toggle-pw{ position:absolute; top:50%; right:12px; transform:translateY(-50%); background:transparent; border:0; padding:6px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:var(--muted); transition:background .2s, color .2s }
+    .toggle-pw:hover, .toggle-pw:focus-visible{ background:rgba(0,0,0,.04); color:var(--ink) }
+    .toggle-pw svg{ width:20px; height:20px }
+    .toggle-pw .icon-hide{ display:none }
+    .toggle-pw.is-on .icon-show{ display:none }
+    .toggle-pw.is-on .icon-hide{ display:inline }
+    .panel button[type=submit]{ width:100%; margin-top:12px; padding:12px 16px; border:0; background:var(--accent); color:#fff; border-radius:12px; font-size:16px; cursor:pointer }
     .hint{ font-size:13px; color:var(--muted); margin-top:10px }
     .error{ color:#b00020; margin-top:10px }
     footer{ text-align:center; margin-top:14px; font-size:12px; color:#999 }
@@ -26,7 +33,17 @@
       <h1></h1>
       <p>Entrez le mot de passe.</p>
       <form id="form">
-        <input id="pw" type="password" placeholder="Mot de passe" autocomplete="current-password" required>
+        <div class="input-wrap">
+          <input id="pw" class="pw-field" type="password" placeholder="Mot de passe" autocomplete="current-password" required>
+          <button id="togglePw" type="button" class="toggle-pw" aria-label="Afficher le mot de passe" aria-pressed="false">
+            <svg class="icon-show" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 5c-4.5 0-8.4 2.9-10 7 1.6 4.1 5.5 7 10 7s8.4-2.9 10-7c-1.6-4.1-5.5-7-10-7Zm0 11.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Zm0-2.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="currentColor"/>
+            </svg>
+            <svg class="icon-hide" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M3.3 2.3 2 3.6l3.2 3.2C3 8.6 1.7 10.6 1 12c1.6 4.1 5.5 7 10 7 2.1 0 4-.6 5.7-1.6l3.3 3.3 1.3-1.3-18-17Zm8.5 15.7A4.5 4.5 0 0 1 9 13.3l2.8 2.8c0 .1 0 0 0 0Zm-6.4-9.4 2.1 2.1a4.5 4.5 0 0 0 5.5 5.5l1.6 1.6c-.9.4-1.8.6-2.8.6-3.5 0-6.7-2.2-8-5.4.5-1.1 1.2-2.1 2-3Zm5.6-.4 5 5a2 2 0 0 0-5-5Zm1-3.2c3.5 0 6.7 2.2 8 5.4-.6 1.3-1.4 2.4-2.5 3.3l-1.4-1.4a4.5 4.5 0 0 0-5.9-5.9l-1.5-1.4c1-.3 2-.5 3.3-.5Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
         <button type="submit">Entrer</button>
         <div id="msg" class="error" role="alert" aria-live="polite"></div>
       </form>
@@ -69,6 +86,17 @@
       msg.textContent = "Mot de passe incorrect.";
     }
   });
+  const pwInput = document.getElementById("pw");
+  const togglePw = document.getElementById("togglePw");
+  if(togglePw && pwInput){
+    togglePw.addEventListener("click", ()=>{
+      const isText = pwInput.getAttribute("type") === "text";
+      pwInput.setAttribute("type", isText ? "password" : "text");
+      togglePw.classList.toggle("is-on", !isText);
+      togglePw.setAttribute("aria-pressed", String(!isText));
+      togglePw.setAttribute("aria-label", isText ? "Afficher le mot de passe" : "Masquer le mot de passe");
+    });
+  }
   </script>
 </body>
 </html>
