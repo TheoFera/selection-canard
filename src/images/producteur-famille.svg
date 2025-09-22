@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">Famille de producteurs devant la ferme</title>
+  <desc id="desc">Illustration représentant un producteur et sa famille devant l'entrée de la ferme avec l'enseigne Bienvenue à la ferme.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#cfe3ff"/>
+      <stop offset="1" stop-color="#f8f5ec"/>
+    </linearGradient>
+    <linearGradient id="door" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#6e4028"/>
+      <stop offset="1" stop-color="#9a5a33"/>
+    </linearGradient>
+    <linearGradient id="wall" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#f1e2c9"/>
+      <stop offset="1" stop-color="#ddc5a0"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#sky)"/>
+  <g transform="translate(40 60)">
+    <rect x="20" y="80" width="560" height="260" rx="20" fill="url(#wall)" stroke="#c29f6d" stroke-width="6"/>
+    <rect x="310" y="120" width="120" height="220" rx="8" fill="url(#door)" stroke="#532b17" stroke-width="5"/>
+    <rect x="100" y="90" width="160" height="60" fill="#efe4d1" stroke="#c0a374" stroke-width="4"/>
+    <text x="180" y="128" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="600" font-size="24" fill="#6d4c2b">Ferme</text>
+    <text x="180" y="152" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="600" font-size="20" fill="#6d4c2b">des Landes</text>
+    <rect x="470" y="140" width="70" height="120" rx="10" fill="#f5f0e6" stroke="#c0a374" stroke-width="4"/>
+    <g transform="translate(485 156)">
+      <circle cx="18" cy="18" r="18" fill="#f7bd3a"/>
+      <path d="M18 0a18 18 0 0 1 0 36" fill="#90c23f"/>
+      <path d="M18 3a15 15 0 0 1 0 30" fill="#f15a29"/>
+      <circle cx="18" cy="18" r="8" fill="#fff"/>
+      <text x="18" y="58" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle" fill="#5f8130">Bienvenue</text>
+      <text x="18" y="72" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle" fill="#5f8130">à la ferme</text>
+    </g>
+  </g>
+  <g transform="translate(70 170)">
+    <g transform="translate(0 40)">
+      <ellipse cx="60" cy="160" rx="56" ry="22" fill="rgba(0,0,0,0.12)"/>
+      <ellipse cx="190" cy="165" rx="60" ry="24" fill="rgba(0,0,0,0.1)"/>
+      <ellipse cx="320" cy="160" rx="58" ry="22" fill="rgba(0,0,0,0.12)"/>
+      <ellipse cx="450" cy="160" rx="54" ry="21" fill="rgba(0,0,0,0.12)"/>
+    </g>
+    <g>
+      <g transform="translate(20)">
+        <circle cx="40" cy="40" r="36" fill="#f4cfb3" stroke="#d8a77b" stroke-width="4"/>
+        <path d="M12 70h56v102c0 18-12 28-28 28s-28-10-28-28z" fill="#2e4f7c" stroke="#1f3654" stroke-width="5"/>
+        <rect x="26" y="142" width="28" height="60" rx="12" fill="#20334c"/>
+        <path d="M12 86h56" stroke="#1f3654" stroke-width="6" stroke-linecap="round"/>
+      </g>
+      <g transform="translate(140)">
+        <circle cx="50" cy="34" r="34" fill="#f2c9a1" stroke="#d29b6b" stroke-width="4"/>
+        <path d="M14 64h72v112c0 20-14 32-36 32s-36-12-36-32z" fill="#87715c" stroke="#614d3a" stroke-width="5"/>
+        <rect x="36" y="150" width="28" height="64" rx="14" fill="#6b5643"/>
+        <path d="M14 84h72" stroke="#614d3a" stroke-width="6" stroke-linecap="round"/>
+      </g>
+      <g transform="translate(270)">
+        <circle cx="50" cy="32" r="32" fill="#f4cfb3" stroke="#d8a77b" stroke-width="4"/>
+        <path d="M18 60h68v116c0 18-13 28-34 28s-34-10-34-28z" fill="#485d6f" stroke="#33424f" stroke-width="5"/>
+        <rect x="38" y="146" width="24" height="58" rx="12" fill="#2c3944"/>
+        <path d="M18 82h68" stroke="#33424f" stroke-width="6" stroke-linecap="round"/>
+      </g>
+      <g transform="translate(400)">
+        <circle cx="45" cy="36" r="34" fill="#f0c7a0" stroke="#d19b6b" stroke-width="4"/>
+        <path d="M14 66h72v110c0 20-14 30-36 30s-36-10-36-30z" fill="#b87975" stroke="#8d5857" stroke-width="5"/>
+        <rect x="34" y="148" width="28" height="60" rx="13" fill="#8d5857"/>
+        <path d="M14 86h72" stroke="#8d5857" stroke-width="6" stroke-linecap="round"/>
+      </g>
+    </g>
+  </g>
+</svg>

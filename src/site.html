@@ -44,10 +44,22 @@
       background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.35); padding:10px 14px; border-radius:999px; font-size:15px
     }
     .producer{
-      background:var(--card); border-radius:var(--radius); padding:18px 20px; box-shadow:var(--shadow);
-      margin:24px 0 10px 0; font-size:16px
+      background:var(--card); border-radius:var(--radius); padding:20px 22px; box-shadow:var(--shadow);
+      margin:24px 0 10px 0; font-size:16px;
+      display:grid;
+      grid-template-columns:220px 1fr;
+      gap:20px;
+      align-items:center;
     }
     .producer strong{color:var(--accent)}
+    .producer-photo{margin:0; border-radius:var(--radius); overflow:hidden; box-shadow:inset 0 0 0 1px rgba(0,0,0,.04)}
+    .producer-photo img{display:block; width:100%; height:100%; object-fit:cover}
+    .producer-body p{margin:0 0 12px 0}
+    .producer-body p:last-child{margin-bottom:0}
+    @media (max-width:620px){
+      .producer{grid-template-columns:1fr}
+      .producer-photo{max-width:320px}
+    }
     .grid{
       display:grid; gap:18px; grid-template-columns:repeat(2, minmax(0, 1fr));
     }
@@ -81,7 +93,13 @@
     </header>
 
     <section class="producer">
-      <p>Notre producteur-fournisseur est situé au cœur des Landes. Sa famille est éleveuse de canards depuis 4 générations.</p>
+      <figure class="producer-photo">
+        <img src="images/producteur-famille.svg" alt="Producteur et famille devant l'entrée de la ferme">
+      </figure>
+      <div class="producer-body">
+        <p>Notre producteur-fournisseur est situé au cœur des Landes. Sa famille est éleveuse de canards depuis 4 générations.</p>
+        <p>Engagée dans une agriculture durable, la ferme élève les canards en plein air et perpétue un savoir-faire artisanal, pour des produits soigneusement préparés et certifiés.</p>
+      </div>
     </section>
 
     <main>
