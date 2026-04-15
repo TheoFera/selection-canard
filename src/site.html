@@ -127,26 +127,9 @@
       box-shadow:var(--shadow);
       isolation:isolate;
     }
-    .hero img{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      filter:contrast(.94) saturate(.92) brightness(.88);
-    }
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        linear-gradient(180deg, rgba(33,24,14,.14), rgba(33,24,14,.62)),
-        linear-gradient(120deg, rgba(255,255,255,.12), transparent 34%);
-      z-index:1;
-    }
     .hero-content{
       position:relative;
-      z-index:2;
+      z-index:1;
       display:flex;
       flex-direction:column;
       justify-content:flex-end;
@@ -360,7 +343,6 @@
     <header class="site-head">
       <div class="eyebrow">Accès réservé</div>
       <h1>Sélection artisanale à partager autour de la table</h1>
-      <p class="lead">Un espace privé pour retrouver une sélection de miel, de vins et de spécialités de porc, présentée dans le même esprit que le catalogue précédent.</p>
     </header>
 
     <nav class="tabs" id="tablist" role="tablist" aria-label="Catalogues produits"></nav>
@@ -377,7 +359,6 @@
       kicker: "Miel artisanal",
       heroTitle: "Une sélection dorée pour les gourmands",
       heroSubtitle: "Des miels de caractère et une douceur à la cuillère, à glisser sur une belle table ou à offrir.",
-      heroImage: "images/miel/hero.jpg",
       introTitle: "Autour du miel",
       introText: "Une gamme courte et lisible, pensée pour proposer des saveurs franches et une origine artisanale facile à présenter.",
       producer: {
@@ -394,7 +375,7 @@
         {
           id: "miel-fleur",
           name: "Miel fleur",
-          image: "images/miel/miel-fleur.jpg",
+          image: "images/miel/miel-fleurs-500g.jpg",
           description: "Un miel souple et floral, facile à proposer au petit-déjeuner comme en cuisine.",
           options: [
             { label: "500 g", price: "8,50 €" },
@@ -404,7 +385,7 @@
         {
           id: "miel-montagne",
           name: "Miel montagne",
-          image: "images/miel/miel-montagne.jpg",
+          image: "images/miel/miel-montagne-500g.jpg",
           description: "Un profil plus soutenu, avec une note plus intense qui accompagne bien fromages et tartines.",
           options: [
             { label: "500 g", price: "10,00 €" },
@@ -414,7 +395,7 @@
         {
           id: "nougat-cuillere",
           name: "Nougat à la cuillère",
-          image: "images/miel/nougat-cuillere.jpg",
+          image: "images/miel/nougat-a-la-cuillere(bio).jpg",
           description: "Une gourmandise à la texture fondante, idéale pour terminer un repas ou composer un cadeau.",
           options: [
             { label: "Prix", price: "9,50 €" }
@@ -428,7 +409,6 @@
       kicker: "Sélection de vins",
       heroTitle: "Des bouteilles choisies pour les repas de fête",
       heroSubtitle: "Une collection courte, lisible et facile à présenter, avec une dominante bordelaise et une ouverture sur la Provence.",
-      heroImage: "images/vin/hero.jpg",
       introTitle: "Présentation",
       introText: "Une sélection de vins de caractère, majoritairement bordelais, choisie pour accompagner les repas de fête et les moments de partage.",
       products: [
@@ -494,7 +474,6 @@
       kicker: "Spécialités de porc",
       heroTitle: "Une sélection charcutière simple et conviviale",
       heroSubtitle: "Des produits à partager, présentés dans le même esprit artisanal que le reste de la sélection.",
-      heroImage: "images/porc/hero.jpg",
       introTitle: "À venir",
       introText: "Cette page pose la base de la future sélection porc, avec les premiers produits et un espace prêt à recevoir les tarifs.",
       producer: {
@@ -600,7 +579,6 @@
       var section = SECTIONS[i];
       html += '<section class="tab-panel" id="panel-' + section.slug + '" role="tabpanel" aria-labelledby="tab-' + section.slug + '" data-slug="' + section.slug + '">';
       html += '<header class="hero">';
-      html += '<img src="' + section.heroImage + '" alt="' + escapeHtml(section.label) + '" data-fallback-label="' + escapeHtml(section.label) + '" data-fallback-tone="' + section.slug + '">';
       html += '<div class="hero-content">';
       html += '<span class="hero-kicker">' + escapeHtml(section.kicker) + '</span>';
       html += '<h2>' + escapeHtml(section.heroTitle) + '</h2>';
@@ -753,7 +731,6 @@
 
   renderTabs();
   renderPanels();
-  applyFallbackImages(document);
   bindTabs();
   activateTab(getSectionBySlug((location.hash || "").replace("#", "")).slug, false);
   </script>
