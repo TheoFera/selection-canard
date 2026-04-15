@@ -159,7 +159,6 @@
       font-size:clamp(16px, 2vw, 18px);
       color:rgba(255,247,236,.92);
     }
-    .intro,
     .producer{
       background:var(--card);
       border:1px solid rgba(117,86,39,.09);
@@ -167,18 +166,9 @@
       box-shadow:var(--shadow);
       margin:0 0 var(--space);
     }
-    .intro{
-      padding:22px 24px;
-    }
-    .intro h3,
     .producer h3{
       margin:0 0 10px;
       font-size:24px;
-    }
-    .intro p{
-      margin:0;
-      color:var(--muted);
-      font-size:17px;
     }
     .producer{
       display:grid;
@@ -359,8 +349,6 @@
       kicker: "Miel artisanal",
       heroTitle: "Une sélection dorée pour les gourmands",
       heroSubtitle: "Des miels de caractère et une douceur à la cuillère, à glisser sur une belle table ou à offrir.",
-      introTitle: "Autour du miel",
-      introText: "Une gamme courte et lisible, pensée pour proposer des saveurs franches et une origine artisanale facile à présenter.",
       producer: {
         title: "Le producteur",
         image: "images/miel/producteur.jpg",
@@ -409,8 +397,6 @@
       kicker: "Sélection de vins",
       heroTitle: "Des bouteilles choisies pour les repas de fête",
       heroSubtitle: "Une collection courte, lisible et facile à présenter, avec une dominante bordelaise et une ouverture sur la Provence.",
-      introTitle: "Présentation",
-      introText: "Une sélection de vins de caractère, majoritairement bordelais, choisie pour accompagner les repas de fête et les moments de partage.",
       products: [
         {
           id: "pessac-leognan-2024",
@@ -474,8 +460,6 @@
       kicker: "Spécialités de porc",
       heroTitle: "Une sélection charcutière simple et conviviale",
       heroSubtitle: "Des produits à partager, présentés dans le même esprit artisanal que le reste de la sélection.",
-      introTitle: "À venir",
-      introText: "Cette page pose la base de la future sélection porc, avec les premiers produits et un espace prêt à recevoir les tarifs.",
       producer: {
         title: "Le producteur",
         image: "images/porc/producteur.jpg",
@@ -585,10 +569,6 @@
       html += '<p>' + escapeHtml(section.heroSubtitle) + '</p>';
       html += '</div>';
       html += '</header>';
-      html += '<section class="intro">';
-      html += '<h3>' + escapeHtml(section.introTitle) + '</h3>';
-      html += '<p>' + escapeHtml(section.introText) + '</p>';
-      html += '</section>';
       html += renderProducer(section.producer, section);
       html += renderProducts(section.products, section);
       html += '</section>';
