@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sélection gourmande</title>
+  <title>Sélection d'été</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
     :root{
       --bg:#f7f2ea;
@@ -120,7 +121,6 @@
     .hero{
       position:relative;
       overflow:hidden;
-      min-height:300px;
       border-radius:var(--radius);
       margin:0 0 var(--space);
       background:linear-gradient(135deg, var(--hero-start), var(--hero-end));
@@ -133,31 +133,241 @@
       display:flex;
       flex-direction:column;
       justify-content:flex-end;
-      min-height:300px;
-      padding:28px;
+      padding:16px 18px;
       color:#fff;
     }
-    .hero-kicker{
-      display:inline-flex;
-      width:max-content;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.14);
-      border:1px solid rgba(255,255,255,.22);
-      font-size:13px;
-      letter-spacing:.1em;
-      text-transform:uppercase;
-    }
     .hero h2{
-      margin:14px 0 8px;
-      font-size:clamp(30px, 4vw, 46px);
+      margin:0;
+      font-size:clamp(26px, 3.2vw, 40px);
       line-height:1.02;
     }
     .hero p{
-      max-width:640px;
       margin:0;
-      font-size:clamp(16px, 2vw, 18px);
+      font-size:clamp(15px, 1.7vw, 17px);
       color:rgba(255,247,236,.92);
+    }
+    .map-card{
+      margin:0 0 var(--space);
+      padding:22px;
+      max-width:960px;
+      border-radius:var(--radius);
+      background:
+        radial-gradient(circle at top right, rgba(255,255,255,.72), transparent 28%),
+        linear-gradient(180deg, rgba(255,252,247,.98), rgba(253,246,239,.92));
+      border:1px solid rgba(117,86,39,.09);
+      box-shadow:var(--shadow);
+    }
+    .map-copy{
+      margin:0 0 16px;
+    }
+    .map-copy h3{
+      margin:0 0 8px;
+      font-size:24px;
+    }
+    .map-copy p{
+      margin:0;
+      color:var(--muted);
+      font-size:16px;
+    }
+    .map-copy-note{
+      font-style:italic;
+      font-size:14px;
+      text-align:center;
+    }
+    .map-stage{
+      position:relative;
+      aspect-ratio:16/10;
+      border-radius:20px;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at 24% 18%, rgba(255,255,255,.7), transparent 22%),
+        linear-gradient(180deg, #f5ede0 0%, #efe1ce 100%);
+      border:1px solid rgba(117,86,39,.08);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.32);
+    }
+    .leaflet-map{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:1;
+    }
+    .leaflet-container{
+      font:inherit;
+      background:#efe1ce;
+    }
+    .leaflet-marker-icon.region-pin-icon{
+      background:transparent;
+      border:none;
+    }
+    .region-pin{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:4px;
+      width:160px;
+      text-align:center;
+      pointer-events:none;
+    }
+    .region-pin-label{
+      display:inline-block;
+      padding:6px 9px;
+      border-radius:999px;
+      background:rgba(45,39,31,.92);
+      color:#fff;
+      box-shadow:none;
+      font-size:12px;
+      line-height:1.2;
+      white-space:nowrap;
+    }
+    .region-pin-dot{
+      width:18px;
+      height:18px;
+      border-radius:999px;
+      background:#7f2e40;
+      border:2px solid #fff8f0;
+      box-shadow:0 8px 18px rgba(42,30,14,.16);
+    }
+    .region-pin.is-active .region-pin-dot{
+      width:22px;
+      height:22px;
+      background:#b24b64;
+      border-width:3px;
+    }
+    .map-overlay{
+      position:absolute;
+      left:18px;
+      bottom:18px;
+      width:min(320px, calc(100% - 36px));
+      padding:16px 16px 14px;
+      border-radius:18px;
+      background:rgba(255,252,247,.96);
+      border:1px solid rgba(117,86,39,.12);
+      box-shadow:0 20px 36px rgba(42,30,14,.12);
+      backdrop-filter:blur(10px);
+      pointer-events:none;
+      z-index:450;
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(8px);
+      transition:opacity .18s ease, transform .18s ease, visibility .18s ease;
+    }
+    .map-outside-button{
+      position:absolute;
+      right:18px;
+      bottom:18px;
+      z-index:420;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:6px;
+      max-width:min(280px, calc(100% - 36px));
+      padding:0;
+      border:none;
+      background:transparent;
+      color:var(--ink);
+      text-align:left;
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+    .map-outside-button:focus-visible{
+      outline:2px solid rgba(127,46,64,.5);
+      outline-offset:2px;
+    }
+    .map-outside-dot{
+      width:18px;
+      height:18px;
+      flex:0 0 18px;
+      border-radius:999px;
+      background:#7f2e40;
+      border:2px solid #fff8f0;
+      box-shadow:0 8px 18px rgba(42,30,14,.16);
+    }
+    .map-outside-copy{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:2px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(45,39,31,.92);
+      color:#fff;
+      box-shadow:0 12px 22px rgba(42,30,14,.14);
+    }
+    .map-outside-kicker{
+      color:rgba(255,255,255,.72);
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .map-outside-label{
+      font-size:14px;
+      font-weight:600;
+      line-height:1.25;
+    }
+    .map-overlay.is-visible{
+      opacity:1;
+      visibility:visible;
+      transform:translateY(0);
+    }
+    .map-overlay h4{
+      margin:0 0 4px;
+      font-size:24px;
+    }
+    .map-overlay p{
+      margin:0 0 12px;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .map-offers{
+      display:grid;
+      gap:8px;
+    }
+    .map-offer{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:rgba(127,46,64,.06);
+      font-size:14px;
+    }
+    .map-offer-meta{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:4px;
+      min-width:0;
+      flex:1;
+    }
+    .map-offer-heading{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+      flex-wrap:wrap;
+    }
+    .map-offer strong{
+      font-size:14px;
+      font-weight:600;
+    }
+    .map-offer-type{
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .map-price{
+      white-space:nowrap;
+      color:#7f2e40;
+      font-weight:700;
+    }
+    .map-offer-description{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
     }
     .producer{
       background:var(--card);
@@ -214,10 +424,22 @@
       background:var(--card);
       border:1px solid rgba(117,86,39,.08);
       box-shadow:var(--shadow);
+      transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease, opacity .2s ease;
+    }
+    .card.is-linked{
+      border-color:rgba(127,46,64,.35);
+      box-shadow:0 18px 30px rgba(60,24,32,.14);
+      transform:translateY(-2px);
+    }
+    .card.is-dimmed{
+      opacity:.52;
     }
     .photo{
       aspect-ratio:4/3;
       background:linear-gradient(135deg, rgba(255,245,220,.92), rgba(223,205,176,.9));
+    }
+    .tab-panel[data-slug="miel"] .photo{
+      aspect-ratio:16/10;
     }
     .card img{
       width:100%;
@@ -230,6 +452,19 @@
       flex:1;
       flex-direction:column;
       padding:18px 18px 20px;
+    }
+    .product-type{
+      display:inline-flex;
+      align-self:flex-start;
+      margin:0 0 10px;
+      padding:7px 11px;
+      border-radius:999px;
+      background:rgba(127,46,64,.08);
+      color:var(--accent);
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
     }
     .body h3{
       margin:0 0 8px;
@@ -309,6 +544,9 @@
       .producer{
         grid-template-columns:1fr;
       }
+      .map-card{
+        padding:18px;
+      }
       .grid{
         grid-template-columns:1fr;
         gap:16px;
@@ -320,10 +558,36 @@
         flex:1 1 0;
         min-width:0;
         text-align:center;
+        touch-action:manipulation;
       }
-      .hero,
-      .hero-content{
-        min-height:260px;
+      .map-copy h3{
+        font-size:20px;
+      }
+      .map-copy-note{
+        font-size:13px;
+      }
+      .map-stage{
+        aspect-ratio:4/5;
+      }
+      .map-overlay{
+        left:12px;
+        right:12px;
+        bottom:12px;
+        width:auto;
+        padding:14px 14px 12px;
+      }
+      .map-outside-button{
+        right:12px;
+        bottom:12px;
+        max-width:180px;
+      }
+      .region-pin{
+        width:132px;
+        gap:3px;
+      }
+      .region-pin-label{
+        padding:5px 8px;
+        font-size:11px;
       }
     }
   </style>
@@ -331,40 +595,38 @@
 <body>
   <div class="wrap app" id="appShell" data-theme="miel">
     <header class="site-head">
-      <div class="eyebrow">Accès réservé</div>
-      <h1>Sélection artisanale à partager autour de la table</h1>
+      <h1>Sélection de produits d'été</h1>
     </header>
 
     <nav class="tabs" id="tablist" role="tablist" aria-label="Catalogues produits"></nav>
     <main id="panels"></main>
-
-    <footer>Lien du site à ne pas partager</footer>
   </div>
 
   <script>
+  var LEAFLET_SCRIPT_URL = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+  var leafletLoadPromise = null;
   var SECTIONS = [
     {
       slug: "miel",
       label: "Miel",
-      kicker: "Miel artisanal",
-      heroTitle: "Une sélection dorée pour les gourmands",
+      heroTitle: "Des miels bios, bruts et crus",
       heroSubtitle: "Des miels de caractère et une douceur à la cuillère, à glisser sur une belle table ou à offrir.",
       producer: {
-        title: "Le producteur",
+        title: "Notre producteur-fournisseur",
         image: "images/miel/producteur.jpg",
         alt: "Producteur de miel",
         paragraphs: [
-          "Notre producteur de miel travaille à petite échelle et privilégie des récoltes qui respectent le rythme des floraisons et des ruches.",
-          "Sa production met en avant des miels lisibles, généreux et faciles à partager, avec une attention particulière portée à la texture et à la régularité des pots.",
-          "Ce texte est provisoire et pourra être remplacé dès que tu me donnes les informations précises sur le producteur."
+          "Notre producteur-fournisseur est un couple d’apiculteurs installé à Saint-Médard-la-Rochette, en Creuse. Leur miel de fleurs est produit localement, dans un rayon de 10 km autour de la ferme ou sur le Plateau de Millevaches, au cœur d’un territoire de prairies, de forêts et de floraisons variées.",
+          "Tous leurs miels sont bruts, crus et certifiés bio : les abeilles butinent dans un environnement préservé, sur un rayon de 2,5 km majoritairement composé de prairies naturelles, de zones sauvages ou de cultures bio, avec un contrôle Ecocert au moins une fois par an.",
+          "Apiculteurs récoltants, ils récoltent, extraient et conditionnent eux-mêmes leurs produits à la ferme."
         ]
       },
       products: [
         {
           id: "miel-fleur",
-          name: "Miel fleur",
+          name: "Miel fleur BIO",
           image: "images/miel/miel-fleurs-500g.jpg",
-          description: "Un miel souple et floral, facile à proposer au petit-déjeuner comme en cuisine.",
+          description: "Ce miel toutes fleurs bio est récolté en été à partir de fleurs sauvages, de lotier, de tilleul et de châtaignier. Il offre un goût doux, légèrement acidulé, facile à apprécier au quotidien. Brut et cru, il n’est ni chauffé ni transformé, ce qui permet de préserver ses qualités naturelles. Sa cristallisation est un phénomène normal, signe d’un miel authentique.",
           options: [
             { label: "500 g", price: "8,50 €" },
             { label: "1 kg", price: "16,00 €" }
@@ -372,9 +634,9 @@
         },
         {
           id: "miel-montagne",
-          name: "Miel montagne",
+          name: "Miel montagne BIO",
           image: "images/miel/miel-montagne-500g.jpg",
-          description: "Un profil plus soutenu, avec une note plus intense qui accompagne bien fromages et tartines.",
+          description: "Ce miel de montagne bio est récolté en été sur le Plateau de Millevaches. Il se distingue par une saveur douce et ronde, avec un profil un peu plus corsé que le miel toutes fleurs, et des notes florales de bourdaine et de trèfle. Brut et cru, il n’est pas chauffé et conserve ainsi son caractère naturel. Comme tout miel non transformé, il peut cristalliser avec le temps.",
           options: [
             { label: "500 g", price: "10,00 €" },
             { label: "1 kg", price: "18,00 €" }
@@ -382,9 +644,9 @@
         },
         {
           id: "nougat-cuillere",
-          name: "Nougat à la cuillère",
+          name: "Nougat à la cuillère BIO",
           image: "images/miel/nougat-a-la-cuillere-bio.jpg",
-          description: "Une gourmandise à la texture fondante, idéale pour terminer un repas ou composer un cadeau.",
+          description: "Ce nougat à la cuillère bio se distingue par sa texture fondante et son goût généreux en miel. Élaboré avec des noisettes bio, il met en avant une recette simple et gourmande, inspirée du terroir creusois. Présenté en pot en verre, il s’inscrit dans la volonté d’emballages réutilisables. Ingrédients : miel bio, sucre bio, noisettes bio, blanc d’œuf bio.",
           options: [
             { label: "Prix", price: "9,50 €" }
           ]
@@ -394,15 +656,67 @@
     {
       slug: "vin",
       label: "Vin",
-      kicker: "Sélection de vins",
-      heroTitle: "Des bouteilles choisies pour les repas de fête",
+      heroTitle: "De belles appellations à prix très accessibles",
       heroSubtitle: "Une collection courte, lisible et facile à présenter, avec une dominante bordelaise et une ouverture sur la Provence.",
+      map: {
+        title: "Retrouvez sur la carte les prix de notre sélection de 5 bouteilles du Bordelais, ainsi qu'1 bouteille de Provence.",
+        intro: "Prix affichés par bouteille de 75 cL.",
+        note: "",
+        center: [44.842, -0.52],
+        zoom: 8,
+        outsideTitle: "Hors Bordelais",
+        outsideCaption: "Provence",
+        outsideProducts: ["cote-de-provence-grand-cru-2024"],
+        bounds: [[44.43, -0.93], [45.27, -0.08]],
+        overviewCenter: [46.3, 2.4],
+        overviewZoom: 5,
+        overviewMarker: [44.842, -0.58],
+        regions: [
+          {
+            id: "saint-julien",
+            name: "Saint-Julien",
+            caption: "Médoc, rive gauche",
+            description: "Le repère le plus au nord de la sélection bordelaise, pour une bouteille plus structurée et classique de la rive gauche.",
+            products: ["saint-julien-2023"],
+            lat: 45.139,
+            lng: -0.756
+          },
+          {
+            id: "pessac-leognan",
+            name: "Pessac-Léognan",
+            caption: "Graves, au sud-ouest de Bordeaux",
+            description: "Deux références sont proposées ici, ce qui en fait le point le plus présent de votre sélection bordelaise.",
+            products: ["pessac-leognan-2024", "pessac-leognan"],
+            lat: 44.79,
+            lng: -0.606
+          },
+          {
+            id: "pomerol",
+            name: "Pomerol",
+            caption: "Libournais, rive droite",
+            description: "Un repère plus ample et gourmand sur la rive droite, pensé pour les repas plus généreux.",
+            products: ["pomerol-2024"],
+            lat: 44.931,
+            lng: -0.199
+          },
+          {
+            id: "sauternes",
+            name: "Sauternes",
+            caption: "Sud bordelais",
+            description: "Le point le plus méridional de la sélection, réservé à la bouteille de fin de repas et aux accords plus riches.",
+            products: ["sauternes"],
+            lat: 44.532,
+            lng: -0.342
+          }
+        ]
+      },
       products: [
         {
           id: "pessac-leognan-2024",
-          name: "Pessac-Leognan 2024",
+          name: "Pessac-Léognan 2024",
+          type: "Rouge",
           image: "images/vin/pessac-leognan-2024.jpg",
-          description: "Une bouteille à la trame élégante, facile à proposer en début de sélection.",
+          description: "Un rouge élégant et souple, sur le fruit, avec une légère touche fumée.",
           options: [
             { label: "Prix", price: "10,00 €" }
           ]
@@ -410,8 +724,9 @@
         {
           id: "saint-julien-2023",
           name: "Saint-Julien 2023",
+          type: "Rouge",
           image: "images/vin/saint-julien-2023.jpg",
-          description: "Une référence plus structurée pour ceux qui recherchent un vin de table de caractère.",
+          description: "Un rouge structuré et élégant, entre finesse et profondeur, au style classique du Médoc.",
           options: [
             { label: "Prix", price: "15,00 €" }
           ]
@@ -419,26 +734,29 @@
         {
           id: "pomerol-2024",
           name: "Pomerol 2024",
+          type: "Rouge",
           image: "images/vin/pomerol-2024.jpg",
-          description: "Une cuvée ronde et ample, adaptée aux repas plus gourmands.",
+          description: "Un rouge ample et velouté, au fruit généreux, avec une belle profondeur.",
           options: [
             { label: "Prix", price: "15,00 €" }
           ]
         },
         {
           id: "cote-de-provence-grand-cru-2024",
-          name: "Côte de Provence grand cru 2024",
+          name: "Côtes de Provence 2024",
+          type: "Rosé",
           image: "images/vin/cote-de-provence-grand-cru-2024.jpg",
-          description: "Une alternative plus lumineuse dans la sélection, pour varier les accords.",
+          description: "Un rosé frais et souple, aux notes de fruits rouges et d’agrumes, idéal à l’apéritif comme à table.",
           options: [
             { label: "Prix", price: "10,00 €" }
           ]
         },
         {
           id: "pessac-leognan",
-          name: "Pessac Léognan",
+          name: "Pessac-Léognan",
+          type: "Blanc sec",
           image: "images/vin/pessac-leognan.jpg",
-          description: "Une seconde référence de l'appellation pour compléter la gamme avec une autre expression.",
+          description: "Un blanc sec vif et harmonieux, mêlant agrumes, fruits blancs et fraîcheur minérale.",
           options: [
             { label: "Prix", price: "12,00 €" }
           ]
@@ -446,8 +764,9 @@
         {
           id: "sauternes",
           name: "Sauternes",
+          type: "Blanc liquoreux",
           image: "images/vin/sauternes.jpg",
-          description: "Une bouteille de fin de repas ou de table de fête, à réserver aux accords plus riches.",
+          description: "Un blanc liquoreux ample et équilibré, aux notes de fruits confits, de miel et de fruits exotiques.",
           options: [
             { label: "Prix", price: "20,00 €" }
           ]
@@ -457,17 +776,16 @@
     {
       slug: "porc",
       label: "Porc",
-      kicker: "Spécialités de porc",
-      heroTitle: "Une sélection charcutière simple et conviviale",
+      heroTitle: "Des produits de la ferme sans nitrites",
       heroSubtitle: "Des produits à partager, présentés dans le même esprit artisanal que le reste de la sélection.",
       producer: {
-        title: "Le producteur",
+        title: "Notre productrice-fournisseuse",
         image: "images/porc/producteur.jpg",
         alt: "Producteur de porc",
         paragraphs: [
-          "Le producteur de porc sera présenté ici avec quelques lignes sur sa ferme, ses méthodes et son approche artisanale.",
-          "Pour cette première version, le bloc est volontairement concis afin de pouvoir être remplacé très vite par une présentation plus précise.",
-          "Dès que tu me transmets les informations réelles, je peux mettre à jour ce texte sans toucher à la structure de la page."
+          "Notre productrice-fournisseuse est éleveuse à Entrepierres, dans les Alpes-de-Haute-Provence. Elle élève ses porcs en plein air et transforme elle-même l’intégralité de sa production à la ferme, en viande destinée à la vente locale et en charcuterie fermière.",
+          "Le choix du sans nitrite entraîne une durée de conservation plus courte, mais il permet de proposer des produits de qualité, sans additifs et donc meilleurs pour la santé.",
+          "Pour cette fois, nous ne proposons qu’une gamme réduite de ses produits, afin de garantir les conditions de conservation lors de la livraison."
         ]
       },
       products: [
@@ -475,15 +793,19 @@
           id: "rillettes-porc",
           name: "Rillettes de porc",
           image: "images/porc/rillettes-porc.jpg",
-          description: "Une spécialité à présenter en tartinable, idéale pour les moments conviviaux.",
-          note: "Informations tarifaires à compléter."
+          description: "Des rillettes fondantes et gourmandes, à servir simplement sur du pain.",
+          options: [
+            { label: "Environ 250 g", price: "6,50 €" }
+          ]
         },
         {
-          id: "saucisses-porc",
-          name: "Saucisses de porc",
-          image: "images/porc/saucisses-porc.jpg",
-          description: "Une proposition simple et familiale qui complète naturellement la sélection.",
-          note: "Informations tarifaires à compléter."
+          id: "pate-de-tete",
+          name: "Pâté de grand mère",
+          image: "images/porc/pate-de-tete.jpg",
+          description: "Une charcuterie de tradition, au goût franc et à la texture rustique.",
+          options: [
+            { label: "Environ 250 g", price: "7,00 €" }
+          ]
         }
       ]
     }
@@ -526,6 +848,312 @@
     return html;
   }
 
+  function getProductsByIds(products, ids){
+    var selected = [];
+    for (var i = 0; i < ids.length; i++) {
+      for (var j = 0; j < products.length; j++) {
+        if (products[j].id === ids[i]) {
+          selected.push(products[j]);
+          break;
+        }
+      }
+    }
+    return selected;
+  }
+
+  function getProductPrice(product){
+    if (product.options && product.options.length && product.options[0].price) {
+      return product.options[0].price;
+    }
+    if (product.note) {
+      return product.note;
+    }
+    return "";
+  }
+
+  function getOffersByIds(products, ids){
+    var offers = [];
+    var selected = getProductsByIds(products, ids);
+    for (var i = 0; i < selected.length; i++) {
+      offers.push({
+        name: selected[i].name,
+        type: selected[i].type || "",
+        description: selected[i].description || "",
+        price: getProductPrice(selected[i])
+      });
+    }
+    return offers;
+  }
+
+  function renderMapOffers(offers){
+    if (!offers.length) {
+      return '<div class="map-offer"><strong>Sélection visible sur la carte</strong><span class="map-price">€</span></div>';
+    }
+
+    var html = "";
+    for (var i = 0; i < offers.length; i++) {
+      html += '<div class="map-offer">';
+      html += '<div class="map-offer-meta">';
+      html += '<div class="map-offer-heading">';
+      html += '<strong>' + escapeHtml(offers[i].name) + '</strong>';
+      if (offers[i].type) {
+        html += '<span class="map-offer-type">' + escapeHtml(offers[i].type) + '</span>';
+      }
+      html += '</div>';
+      if (offers[i].description) {
+        html += '<p class="map-offer-description">' + escapeHtml(offers[i].description) + '</p>';
+      }
+      html += '</div>';
+      html += '<span class="map-price">' + escapeHtml(offers[i].price) + '</span>';
+      html += '</div>';
+    }
+    return html;
+  }
+
+  function renderMap(map, section){
+    if (!map || !map.regions || !map.regions.length) {
+      return "";
+    }
+
+    var html = '<section class="map-card" data-map-card data-map-slug="' + section.slug + '" aria-labelledby="map-title-' + section.slug + '">';
+    html += '<div class="map-copy">';
+    html += '<h3 id="map-title-' + section.slug + '">' + escapeHtml(map.title) + '</h3>';
+    if (map.intro) {
+      html += '<p class="map-copy-note">' + escapeHtml(map.intro) + '</p>';
+    }
+    html += '</div>';
+    html += '<div class="map-stage">';
+    html += '<div class="leaflet-map" data-leaflet-map></div>';
+    html += '<div class="map-empty" data-map-empty hidden>Carte indisponible hors connexion.</div>';
+    if (map.outsideProducts && map.outsideProducts.length) {
+      var outsideOffers = getOffersByIds(section.products, map.outsideProducts);
+      var outsideLabel = outsideOffers.length ? outsideOffers[0].name : (map.outsideTitle || "Hors carte");
+      html += '<button class="map-outside-button" type="button" data-map-outside>';
+      html += '<span class="map-outside-dot" aria-hidden="true"></span>';
+      html += '<span class="map-outside-copy">';
+      html += '<span class="map-outside-kicker">' + escapeHtml(map.outsideTitle || "Hors carte") + '</span>';
+      html += '<span class="map-outside-label">' + escapeHtml(outsideLabel) + '</span>';
+      html += '</span>';
+      html += '</button>';
+    }
+    html += '<div class="map-overlay">';
+    html += '<h4 data-map-title>Nos domaines</h4>';
+    html += '<div class="map-offers" data-map-offers>' + renderMapOffers([]) + '</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '</section>';
+    return html;
+  }
+
+  function getMapConfigForCard(mapCard){
+    var slug = mapCard.getAttribute("data-map-slug");
+    return getSectionBySlug(slug).map;
+  }
+
+  function findRegionById(mapCard, regionId){
+    var config = getMapConfigForCard(mapCard);
+    for (var i = 0; i < config.regions.length; i++) {
+      if (config.regions[i].id === regionId) {
+        return config.regions[i];
+      }
+    }
+    return null;
+  }
+
+  function getOutsideOffers(mapCard){
+    var section = getSectionBySlug(mapCard.getAttribute("data-map-slug"));
+    var config = getMapConfigForCard(mapCard);
+    return getOffersByIds(section.products, config.outsideProducts || []);
+  }
+
+  function showMapFallback(mapCard){
+    var fallback = mapCard.querySelector("[data-map-empty]");
+    if (fallback) {
+      fallback.hidden = false;
+    }
+  }
+
+  function showAllMapFallbacks(){
+    var mapCards = document.querySelectorAll("[data-map-card]");
+    for (var i = 0; i < mapCards.length; i++) {
+      showMapFallback(mapCards[i]);
+    }
+  }
+
+  function loadLeafletScript(){
+    if (window.L) {
+      return Promise.resolve(window.L);
+    }
+    if (leafletLoadPromise) {
+      return leafletLoadPromise;
+    }
+
+    leafletLoadPromise = new Promise(function(resolve, reject){
+      var existing = document.querySelector("script[data-leaflet-loader='true']");
+      if (existing) {
+        existing.addEventListener("load", function(){ resolve(window.L); }, { once: true });
+        existing.addEventListener("error", function(){ reject(new Error("leaflet-load-failed")); }, { once: true });
+        return;
+      }
+
+      var script = document.createElement("script");
+      script.src = LEAFLET_SCRIPT_URL;
+      script.async = true;
+      script.dataset.leafletLoader = "true";
+      script.onload = function(){
+        resolve(window.L);
+      };
+      script.onerror = function(){
+        reject(new Error("leaflet-load-failed"));
+      };
+      document.head.appendChild(script);
+    });
+
+    return leafletLoadPromise;
+  }
+
+  function createTileLayer(){
+    return L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    });
+  }
+
+  function createRegionMarker(region){
+    return L.marker([region.lat, region.lng], {
+      icon: L.divIcon({
+        className: "region-pin-icon",
+        html: '<span class="region-pin"><span class="region-pin-label">' + escapeHtml(region.name) + '</span><span class="region-pin-dot"></span></span>',
+        iconSize: [160, 46],
+        iconAnchor: [80, 46]
+      })
+    });
+  }
+
+  function setMarkerActive(marker, isActive){
+    var element = marker.getElement();
+    if (element) {
+      var pin = element.querySelector(".region-pin");
+      if (pin) {
+        pin.classList.toggle("is-active", isActive);
+      }
+    }
+    marker.setZIndexOffset(isActive ? 1000 : 0);
+    if (isActive) {
+      marker.bringToFront();
+    }
+  }
+
+  function ensureLeafletMaps(mapCard){
+    if (mapCard._leafletState) {
+      return mapCard._leafletState;
+    }
+    if (!window.L) {
+      return null;
+    }
+
+    var config = getMapConfigForCard(mapCard);
+    var stage = mapCard.querySelector("[data-leaflet-map]");
+    if (!stage) {
+      return null;
+    }
+
+    var mainMap = L.map(stage, {
+      scrollWheelZoom: false,
+      dragging: false,
+      touchZoom: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+      keyboard: false,
+      zoomControl: false,
+      attributionControl: false
+    });
+    createTileLayer().addTo(mainMap);
+    mainMap.setView(config.center, config.zoom);
+
+    var markers = {};
+    for (var i = 0; i < config.regions.length; i++) {
+      var region = config.regions[i];
+      var marker = createRegionMarker(region).addTo(mainMap);
+      marker.on("mouseover", (function(targetRegion){
+        return function(){
+          setMapRegion(mapCard, targetRegion.id);
+        };
+      })(region));
+      marker.on("mouseout", function(){
+        resetMapRegion(mapCard);
+      });
+      marker.on("click", (function(targetRegion){
+        return function(){
+          setMapRegion(mapCard, targetRegion.id);
+        };
+      })(region));
+      markers[region.id] = marker;
+    }
+
+    mapCard._leafletState = {
+      mainMap: mainMap,
+      markers: markers,
+      center: config.center,
+      zoom: config.zoom
+    };
+    return mapCard._leafletState;
+  }
+
+  function invalidateLeafletMaps(mapCard){
+    var state = ensureLeafletMaps(mapCard);
+    if (!state) {
+      return;
+    }
+    window.requestAnimationFrame(function(){
+      state.mainMap.invalidateSize();
+      state.mainMap.setView(state.center, state.zoom, { animate: false });
+    });
+  }
+
+  function resetMapRegion(mapCard){
+    var title = mapCard.querySelector("[data-map-title]");
+    var offers = mapCard.querySelector("[data-map-offers]");
+    var overlay = mapCard.querySelector(".map-overlay");
+    var state = ensureLeafletMaps(mapCard);
+
+    title.textContent = "Nos domaines";
+    offers.innerHTML = renderMapOffers([]);
+    if (overlay) {
+      overlay.classList.remove("is-visible");
+    }
+
+    if (state) {
+      for (var markerId in state.markers) {
+        if (Object.prototype.hasOwnProperty.call(state.markers, markerId)) {
+          setMarkerActive(state.markers[markerId], false);
+        }
+      }
+    }
+  }
+
+  function setMapOutside(mapCard){
+    var title = mapCard.querySelector("[data-map-title]");
+    var offers = mapCard.querySelector("[data-map-offers]");
+    var overlay = mapCard.querySelector(".map-overlay");
+    var config = getMapConfigForCard(mapCard);
+    var state = ensureLeafletMaps(mapCard);
+
+    title.textContent = config.outsideTitle || "Hors carte";
+    offers.innerHTML = renderMapOffers(getOutsideOffers(mapCard));
+    if (overlay) {
+      overlay.classList.add("is-visible");
+    }
+
+    if (state) {
+      for (var markerId in state.markers) {
+        if (Object.prototype.hasOwnProperty.call(state.markers, markerId)) {
+          setMarkerActive(state.markers[markerId], false);
+        }
+      }
+    }
+  }
+
   function renderProducts(products, section){
     var html = '<div class="grid">';
     for (var i = 0; i < products.length; i++) {
@@ -535,6 +1163,9 @@
       html += '<img src="' + product.image + '" alt="' + escapeHtml(product.name) + '" data-fallback-label="' + escapeHtml(product.name) + '" data-fallback-tone="' + section.slug + '">';
       html += '</div>';
       html += '<div class="body">';
+      if (product.type) {
+        html += '<div class="product-type">' + escapeHtml(product.type) + '</div>';
+      }
       html += '<h3>' + escapeHtml(product.name) + '</h3>';
       html += '<p>' + escapeHtml(product.description) + '</p>';
       if (product.options && product.options.length) {
@@ -564,16 +1195,74 @@
       html += '<section class="tab-panel" id="panel-' + section.slug + '" role="tabpanel" aria-labelledby="tab-' + section.slug + '" data-slug="' + section.slug + '">';
       html += '<header class="hero">';
       html += '<div class="hero-content">';
-      html += '<span class="hero-kicker">' + escapeHtml(section.kicker) + '</span>';
       html += '<h2>' + escapeHtml(section.heroTitle) + '</h2>';
-      html += '<p>' + escapeHtml(section.heroSubtitle) + '</p>';
       html += '</div>';
       html += '</header>';
       html += renderProducer(section.producer, section);
-      html += renderProducts(section.products, section);
+      html += renderMap(section.map, section);
+      if (section.slug !== "vin") {
+        html += renderProducts(section.products, section);
+      }
       html += '</section>';
     }
     document.getElementById("panels").innerHTML = html;
+  }
+
+  function setMapRegion(mapCard, regionId){
+    var title = mapCard.querySelector("[data-map-title]");
+    var offers = mapCard.querySelector("[data-map-offers]");
+    var overlay = mapCard.querySelector(".map-overlay");
+    var section = getSectionBySlug(mapCard.getAttribute("data-map-slug"));
+    var region = findRegionById(mapCard, regionId);
+    var state = ensureLeafletMaps(mapCard);
+
+    if (!region) {
+      resetMapRegion(mapCard);
+      return;
+    }
+
+    title.textContent = region.name;
+    offers.innerHTML = renderMapOffers(getOffersByIds(section.products, region.products));
+    if (overlay) {
+      overlay.classList.add("is-visible");
+    }
+
+    if (state) {
+      for (var markerId in state.markers) {
+        if (Object.prototype.hasOwnProperty.call(state.markers, markerId)) {
+          var marker = state.markers[markerId];
+          var active = markerId === regionId;
+          setMarkerActive(marker, active);
+        }
+      }
+    }
+  }
+
+  function bindMaps(){
+    var mapCards = document.querySelectorAll("[data-map-card]");
+    for (var i = 0; i < mapCards.length; i++) {
+      resetMapRegion(mapCards[i]);
+      var outside = mapCards[i].querySelector("[data-map-outside]");
+      if (outside) {
+        (function(mapCard, trigger){
+          trigger.addEventListener("mouseenter", function(){
+            setMapOutside(mapCard);
+          });
+          trigger.addEventListener("mouseleave", function(){
+            resetMapRegion(mapCard);
+          });
+          trigger.addEventListener("focus", function(){
+            setMapOutside(mapCard);
+          });
+          trigger.addEventListener("blur", function(){
+            resetMapRegion(mapCard);
+          });
+          trigger.addEventListener("click", function(){
+            setMapOutside(mapCard);
+          });
+        })(mapCards[i], outside);
+      }
+    }
   }
 
   function fallbackPalette(tone){
@@ -654,6 +1343,13 @@
     if (location.hash !== "#" + section.slug) {
       history.replaceState(null, "", "#" + section.slug);
     }
+    if (section.map) {
+      var activePanel = document.getElementById("panel-" + section.slug);
+      var mapCards = activePanel ? activePanel.querySelectorAll("[data-map-card]") : [];
+      for (var k = 0; k < mapCards.length; k++) {
+        invalidateLeafletMaps(mapCards[k]);
+      }
+    }
     if (shouldFocus && activeTab) {
       activeTab.focus();
     }
@@ -710,8 +1406,18 @@
 
   renderTabs();
   renderPanels();
+  bindMaps();
   bindTabs();
   activateTab(getSectionBySlug((location.hash || "").replace("#", "")).slug, false);
+  loadLeafletScript().then(function(){
+    var mapCards = document.querySelectorAll("[data-map-card]");
+    for (var i = 0; i < mapCards.length; i++) {
+      ensureLeafletMaps(mapCards[i]);
+      invalidateLeafletMaps(mapCards[i]);
+    }
+  }).catch(function(){
+    showAllMapFallbacks();
+  });
   </script>
 </body>
 </html>
