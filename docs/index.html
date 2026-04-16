@@ -32,7 +32,7 @@
     <div class="panel">
       <h1></h1>
       <p>Entrez le mot de passe.</p>
-      <form id="form">
+      <form id="form" novalidate>
         <div class="input-wrap">
           <input id="pw" class="pw-field" type="password" placeholder="Mot de passe" autocomplete="current-password" required>
           <button id="togglePw" type="button" class="toggle-pw" aria-label="Afficher le mot de passe" aria-pressed="false">
@@ -47,7 +47,7 @@
 </svg>
           </button>
         </div>
-        <button type="submit">Entrer</button>
+        <button id="submitBtn" type="submit">Entrer</button>
         <div id="msg" class="error" role="alert" aria-live="polite"></div>
       </form>
       <footer></footer>
@@ -70,27 +70,84 @@
   }
   function b64tobin(b64){ return Uint8Array.from(atob(b64), c => c.charCodeAt(0)); }
   function decodeUtf8(buf){ return new TextDecoder("utf-8").decode(buf); }
-
-  document.getElementById("form").addEventListener("submit", async (e)=>{
-    e.preventDefault();
-    const pw = document.getElementById("pw").value;
-    const msg = document.getElementById("msg");
-    msg.textContent = "";
-    try{
-      const meta = await fetch(PAYLOAD_URL, {cache:"no-store"}).then(r=>r.json());
-      const salt = b64tobin(meta.salt);
-      const iv   = b64tobin(meta.iv);
-      const data = b64tobin(meta.data);
-      const key  = await deriveKey(pw, salt, meta.iterations);
-      const plain = await crypto.subtle.decrypt({name:"AES-GCM", iv}, key, data);
-      const html = decodeUtf8(plain);
-      document.open(); document.write(html); document.close();
-    }catch(err){
-      msg.textContent = "Mot de passe incorrect.";
-    }
-  });
   const pwInput = document.getElementById("pw");
   const togglePw = document.getElementById("togglePw");
+  const form = document.getElementById("form");
+  const submitBtn = document.getElementById("submitBtn");
+  const msg = document.getElementById("msg");
+
+  function setMessage(text){
+    msg.textContent = text || "";
+  }
+
+  function setBusy(isBusy){
+    form.setAttribute("aria-busy", String(isBusy));
+    submitBtn.disabled = isBusy;
+    submitBtn.textContent = isBusy ? "Vérification..." : "Entrer";
+    pwInput.disabled = isBusy;
+    if (togglePw) togglePw.disabled = isBusy;
+  }
+
+  function createError(code, fallbackMessage){
+    const err = new Error(fallbackMessage || code);
+    err.code = code;
+    return err;
+  }
+
+  function isValidPayload(meta){
+    return !!meta
+      && typeof meta.salt === "string"
+      && typeof meta.iv === "string"
+      && typeof meta.data === "string"
+      && Number.isInteger(meta.iterations)
+      && meta.iterations > 0;
+  }
+
+  async function loadPayload(){
+    let response;
+    try{
+      response = await fetch(PAYLOAD_URL, {cache:"no-store"});
+    }catch(err){
+      if (location.protocol === "file:") {
+        throw createError("LOCAL_FILE_BLOCKED", "Ouverture locale non prise en charge.");
+      }
+      throw createError("PAYLOAD_UNREACHABLE", err && err.message);
+    }
+    if (!response.ok) {
+      throw createError("PAYLOAD_HTTP_" + response.status, "Chargement impossible.");
+    }
+    let meta;
+    try{
+      meta = await response.json();
+    }catch(err){
+      throw createError("PAYLOAD_INVALID_JSON", err && err.message);
+    }
+    if (!isValidPayload(meta)) {
+      throw createError("PAYLOAD_INVALID_FORMAT", "Format invalide.");
+    }
+    return meta;
+  }
+
+  function getUserMessage(err){
+    if (!err) return "Une erreur est survenue. Réessayez.";
+    if (err.code === "LOCAL_FILE_BLOCKED") {
+      return "Cette page doit être ouverte via un serveur web, pas directement depuis un fichier.";
+    }
+    if (err.code === "PAYLOAD_UNREACHABLE" || err.code === "PAYLOAD_INVALID_JSON" || err.code === "PAYLOAD_INVALID_FORMAT") {
+      return "Le contenu protégé n'a pas pu être chargé. Vérifiez que \"payload.json\" est présent et valide.";
+    }
+    if (typeof err.code === "string" && err.code.indexOf("PAYLOAD_HTTP_") === 0) {
+      return "Le contenu protégé est introuvable ou inaccessible.";
+    }
+    if (err.name === "OperationError") {
+      return "Mot de passe incorrect.";
+    }
+    if (!window.crypto || !window.crypto.subtle) {
+      return "Votre navigateur ne prend pas en charge le déverrouillage sécurisé de cette page.";
+    }
+    return "Une erreur technique est survenue. Réessayez.";
+  }
+
   if(togglePw && pwInput){
     togglePw.addEventListener("click", ()=>{
       const isText = pwInput.getAttribute("type") === "text";
@@ -100,6 +157,40 @@
       togglePw.setAttribute("aria-label", isText ? "Afficher le mot de passe" : "Masquer le mot de passe");
     });
   }
+
+  form.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const pw = pwInput.value;
+    setMessage("");
+    if (!pw.trim()) {
+      setMessage("Saisissez le mot de passe.");
+      pwInput.focus();
+      return;
+    }
+    if (!window.crypto || !window.crypto.subtle) {
+      setMessage("Votre navigateur ne prend pas en charge le déverrouillage sécurisé de cette page.");
+      return;
+    }
+    setBusy(true);
+    try{
+      const meta = await loadPayload();
+      const salt = b64tobin(meta.salt);
+      const iv   = b64tobin(meta.iv);
+      const data = b64tobin(meta.data);
+      const key  = await deriveKey(pw, salt, meta.iterations);
+      const plain = await crypto.subtle.decrypt({name:"AES-GCM", iv}, key, data);
+      const html = decodeUtf8(plain);
+      document.open();
+      document.write(html);
+      document.close();
+    }catch(err){
+      setMessage(getUserMessage(err));
+      setBusy(false);
+      pwInput.focus();
+      pwInput.select();
+      console.error("Erreur de déverrouillage:", err);
+    }
+  });
   </script>
 </body>
 </html>
